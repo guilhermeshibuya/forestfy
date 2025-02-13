@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.reconhecimentoflorestal.R;
 import com.example.reconhecimentoflorestal.utils.RuntimeLocaleChanger;
@@ -18,6 +19,7 @@ import com.google.android.material.button.MaterialButton;
 
 public class LanguagesFragment extends Fragment {
     private MaterialButton btnPortuguese, btnEnglish, btnSpanish;
+    private TextView settingsTitle;
 
     public LanguagesFragment() {
         // Required empty public constructor
@@ -36,6 +38,7 @@ public class LanguagesFragment extends Fragment {
         btnPortuguese = view.findViewById(R.id.languages_btn_portuguese);
         btnEnglish = view.findViewById(R.id.languages_btn_english);
         btnSpanish = view.findViewById(R.id.languages_btn_spanish);
+        settingsTitle = view.findViewById(R.id.settings_title);
 
         highlightActiveLanguage();
 
@@ -47,6 +50,10 @@ public class LanguagesFragment extends Fragment {
         });
         btnSpanish.setOnClickListener(v -> {
             changeLanguage("es");
+        });
+
+        settingsTitle.setOnClickListener(v -> {
+            requireActivity().onBackPressed();
         });
 
         return view;

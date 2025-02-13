@@ -24,7 +24,7 @@
             android:layout_marginTop="24dp"
             app:drawableLeftCompat="@drawable/arrow_left"
             android:drawablePadding="12dp"
-            android:drawableTint="@color/c10"/>
+            app:drawableTint="@color/c10" />
 
         <com.google.android.material.button.MaterialButton
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
