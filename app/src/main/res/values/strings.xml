@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Forestfy</string>
+    <string name="nav_menu_home">Home</string>
+    <string name="nav_menu_results">Results</string>
+    <string name="nav_menu_settings">Settings</string>
+    <string name="home_title">Hi, welcome! 👋</string>
+    <string name="home_subtitle">To start, take a photo or choose one from the gallery</string>
+    <string name="home_btn_open_camera">take a picture</string>
+    <string name="home_or_text">or</string>
+    <string name="home_btn_choose_picture">choose photo</string>
+    <string name="results_title">Results</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_btn_language">Language</string>
+    <string name="languages_title">Language</string>
+    <string name="languages_btn_english">English</string>
+    <string name="languages_btn_portuguese">Português</string>
+    <string name="languages_btn_spanish">Español</string>
+
+    <string name="save_image_success">Photo saved</string>
+    <string name="save_image_error">Error saving cropped image</string>
+    <string name="camera_image_error">Error saving image</string>
+
+    <string name="results_chart">Species</string>
+</resources>
