@@ -30,6 +30,7 @@ import com.canhub.cropper.CropImageOptions;
 import com.example.reconhecimentoflorestal.R;
 import com.example.reconhecimentoflorestal.SharedViewModel;
 import com.example.reconhecimentoflorestal.ui.MainActivity;
+import com.example.reconhecimentoflorestal.utils.ImageCropperHelper;
 import com.herohan.uvcapp.CameraHelper;
 import com.herohan.uvcapp.ICameraHelper;
 import com.herohan.uvcapp.ImageCapture;
@@ -41,90 +42,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-public class UsbCameraFragment extends Fragment implements View.OnClickListener {
+public class UsbCameraFragment extends Fragment  {
     private static final int DEFAULT_WIDTH = 640;
     private static final int DEFAULT_HEIGHT = 480;
 
     private ICameraHelper mCameraHelper;
     private AspectRatioSurfaceView mCameraViewMain;
-
-    private MainActivity mainActivity;
-    private SharedViewModel viewModel;
-    ActivityResultLauncher<CropImageContractOptions> cropImage = registerForActivityResult(
-            new CropImageContract(),
-            result -> {
-                if (result.isSuccessful()) {
-                    Bitmap cropped = BitmapFactory.decodeFile(result.getUriFilePath(requireContext().getApplicationContext(), true));
-                    saveImage(cropped);
-
-                    File tempFile = new File(requireContext().getCacheDir(), "temp.jpg");
-                    if (tempFile.exists()) {
-                        boolean deleted = tempFile.delete();
-                        if (!deleted) {
-                            Log.e("CROP IMAGE", "Erro ao excluir a imagem temporária");
-                        }
-                    }
-                }
-            });
-
-    private void launchImageCropper(Uri uri) {
-        CropImageOptions cropImageOptions = new CropImageOptions();
-        cropImageOptions.imageSourceIncludeGallery = true;
-        cropImageOptions.imageSourceIncludeCamera = true;
-
-        cropImageOptions.autoZoomEnabled = true;
-
-        cropImageOptions.toolbarColor = Color.rgb(90, 194,121);
-        cropImageOptions.activityMenuTextColor = Color.rgb(0, 22,9);
-        cropImageOptions.toolbarBackButtonColor = Color.rgb(0, 22,9);
-        cropImageOptions.activityMenuIconColor = Color.rgb(0, 22,9);
-
-        CropImageContractOptions cropImageContractOptions = new CropImageContractOptions(uri, cropImageOptions);
-
-        cropImage.launch(cropImageContractOptions);
-    }
-
-    private void saveImage(Bitmap bitmap) {
-        File file = FileUtils.getCaptureFile(
-                requireContext(),
-                Environment.DIRECTORY_DCIM,
-                ".jpg");
-        try {
-            OutputStream outputStream = new FileOutputStream(file);
-
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            outputStream.flush();
-            outputStream.close();
-
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
-            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
-            requireContext().getApplicationContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
-            MediaScannerConnection.scanFile(requireContext().getApplicationContext(), new String[]{ file.getAbsolutePath()}, null, null);
-
-            Toast.makeText(
-                    requireContext().getApplicationContext(),
-                    getString(R.string.save_image_success),
-                    Toast.LENGTH_SHORT).show();
-
-            Bitmap cropped = BitmapFactory.decodeFile(file.getAbsolutePath());
-            viewModel.setImage(cropped);
-
-            switchToResultsFragment();
-        } catch (Exception e) {
-            Toast.makeText(
-                    requireContext().getApplicationContext(),
-                    getString(R.string.save_image_error),
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
+    private ImageCropperHelper imageCropperHelper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        mainActivity = (MainActivity) requireActivity();
+        SharedViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        imageCropperHelper = new ImageCropperHelper(this, viewModel);
     }
 
     @Nullable
@@ -158,9 +89,6 @@ public class UsbCameraFragment extends Fragment implements View.OnClickListener 
                 }
             }
         });
-
-        ImageButton btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
-        btnCaptureImage.setOnClickListener(this);
     }
 
     @Override
@@ -252,7 +180,7 @@ public class UsbCameraFragment extends Fragment implements View.OnClickListener 
 
                 @Override
                 public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                    launchImageCropper(outputFileResults.getSavedUri());
+                    imageCropperHelper.launchImageCropper(outputFileResults.getSavedUri());
                 }
 
                 @Override
@@ -263,44 +191,6 @@ public class UsbCameraFragment extends Fragment implements View.OnClickListener 
                             Toast.LENGTH_SHORT).show();
                 }
             });
-        }
-    }
-
-    private void switchToResultsFragment() {
-        mainActivity.switchToResultsFragment();
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.btnTakePhoto) {
-            if (mCameraHelper != null) {
-                File file = FileUtils.getCaptureFile(
-                        requireContext(),
-                        Environment.DIRECTORY_DCIM,
-                        ".jpg");
-
-                ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions.Builder(file).build();
-
-                mCameraHelper.takePicture(options, new ImageCapture.OnImageCaptureCallback() {
-                    @Override
-                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                        launchImageCropper(outputFileResults.getSavedUri());
-
-                        Toast.makeText(
-                                requireContext(),
-                                "Foto salva",
-                                Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onError(int imageCaptureError, @NonNull String message, @Nullable Throwable cause) {
-                        Toast.makeText(
-                                requireContext(),
-                                message,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
         }
     }
 }

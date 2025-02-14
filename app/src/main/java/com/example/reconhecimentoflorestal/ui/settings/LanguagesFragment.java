@@ -19,11 +19,8 @@ import com.google.android.material.button.MaterialButton;
 
 public class LanguagesFragment extends Fragment {
     private MaterialButton btnPortuguese, btnEnglish, btnSpanish;
-    private TextView settingsTitle;
 
-    public LanguagesFragment() {
-        // Required empty public constructor
-    }
+    public LanguagesFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +35,7 @@ public class LanguagesFragment extends Fragment {
         btnPortuguese = view.findViewById(R.id.languages_btn_portuguese);
         btnEnglish = view.findViewById(R.id.languages_btn_english);
         btnSpanish = view.findViewById(R.id.languages_btn_spanish);
-        settingsTitle = view.findViewById(R.id.settings_title);
+        TextView settingsTitle = view.findViewById(R.id.settings_title);
 
         highlightActiveLanguage();
 

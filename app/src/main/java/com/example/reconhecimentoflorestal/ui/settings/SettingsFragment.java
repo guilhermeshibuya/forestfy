@@ -14,9 +14,7 @@ import com.google.android.material.button.MaterialButton;
 
 public class SettingsFragment extends Fragment {
 
-    public SettingsFragment() {
-        // Required empty public constructor
-    }
+    public SettingsFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
